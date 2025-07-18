@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.koreait.spring2.mapper.StudyMapper">
+
+    <insert id="insertStudy" parameterType="Study">
+        INSERT INTO studies (title, content, max_member, deadline, writer_id)
+        VALUES (#{title}, #{content}, #{maxMember}, #{deadline}, #{writerId});
+    </insert>
+
+    <select id="findAll" resultType="Study">
+        SELECT s.*, u.userid AS writerUserid
+        FROM studies s
+                 JOIN users u ON s.writer_id = u.id
+        ORDER BY s.id DESC
+    </select>
+
+    <select id="findById" resultType="Study">
+        SELECT s.id,
+               s.title,
+               s.content,
+               s.max_member AS maxMember,
+               s.deadline,
+               s.writer_id AS writerId,
+               u.userid AS writerUserid,
+               s.created_at AS createdAt
+        FROM studies s
+                 JOIN users u ON s.writer_id = u.id
+        WHERE s.id = #{id}
+    </select>
+
+    <select id="search" resultType="Study">
+        SELECT s.*, u.userid AS writerUserid
+        FROM studies s
+                 JOIN users u ON s.writer_id = u.id
+        WHERE s.title LIKE CONCAT('%', #{keyword}, '%')
+           OR u.userid LIKE CONCAT('%', #{keyword}, '%')
+        ORDER BY s.id DESC
+    </select>
+
+    <select id="getStudiesByWriter" resultType="com.koreait.spring2.entity.Study">
+        SELECT s.*, u.userid AS writerUserid
+        FROM studies s
+                 JOIN users u ON s.writer_id = u.id
+        WHERE s.writer_id = #{writerId}
+        ORDER BY s.id DESC
+    </select>
+
+</mapper>

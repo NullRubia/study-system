@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <title>마이페이지</title>
+  </head>
+  <body>
+    <h2>🙋 마이페이지</h2>
+
+    <h3>회원 정보 수정</h3>
+    <form onsubmit="updateInfo(event)">
+      <input type="text" id="name" placeholder="이름" /><br />
+      <input type="email" id="email" placeholder="이메일" /><br />
+      <input type="password" id="password" placeholder="새 비밀번호" /><br />
+      <button type="submit">수정</button>
+    </form>
+
+    <h3>📌 내가 개설한 스터디</h3>
+    <ul id="myStudies"></ul>
+
+    <h3>📌 내가 신청한 스터디</h3>
+    <ul id="myApplications"></ul>
+
+    <script>
+      const token = localStorage.getItem("token");
+      if (!token) location.href = "login.html";
+
+      async function loadUserInfo() {
+        const res = await fetch("http://localhost:8080/users/info", {
+          headers: { Authorization: "Bearer " + token },
+        });
+        const user = await res.json();
+        document.getElementById("name").value = user.name;
+        document.getElementById("email").value = user.email;
+      }
+
+      async function updateInfo(e) {
+        e.preventDefault();
+        const data = {
+          name: document.getElementById("name").value,
+          email: document.getElementById("email").value,
+          password: document.getElementById("password").value,
+        };
+        const res = await fetch("http://localhost:8080/users/update", {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + token,
+          },
+          body: JSON.stringify(data),
+        });
+        alert(res.ok ? "수정 완료" : "수정 실패");
+      }
+
+      async function loadMyStudies() {
+        const res = await fetch("http://localhost:8080/studies/mine", {
+          headers: { Authorization: "Bearer " + token },
+        });
+
+        if (!res.ok) {
+          alert("내 스터디 목록 불러오기 실패");
+          return;
+        }
+
+        const studies = await res.json();
+        const ul = document.getElementById("myStudies");
+        ul.innerHTML = "";
+
+        studies.forEach((s) => {
+          const li = document.createElement("li");
+          li.innerHTML = `<a href="studyview.html?id=${s.id}">${s.title}</a>`;
+          ul.appendChild(li);
+        });
+      }
+
+      async function loadMyApplications() {
+        const res = await fetch("http://localhost:8080/applications/mine", {
+          headers: { Authorization: "Bearer " + token },
+        });
+        const apps = await res.json();
+        const ul = document.getElementById("myApplications");
+        ul.innerHTML = "";
+        apps.forEach((a) => {
+          const li = document.createElement("li");
+          li.innerHTML = `<a href="studyview.html?id=${a.studyId}">${a.studyTitle}</a>`;
+          ul.appendChild(li);
+        });
+      }
+
+      (async () => {
+        await loadUserInfo();
+        await loadMyStudies();
+        await loadMyApplications();
+      })();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,57 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.5.3'
+    id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'com.koreait'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    // 🔹 Spring Boot 기본
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+
+    // 🔹 MyBatis
+    implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.3'
+
+    // 🔹 MySQL Driver
+    runtimeOnly 'com.mysql:mysql-connector-j'
+
+    // 🔹 Lombok
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    // 🔹 Spring Data JDBC (선택: MyBatis만 쓸 거면 생략 가능)
+    implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
+
+    // 🔹 Spring Security (선택: JWT 로그인 구현 시)
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+
+    // 🔹 JWT (선택: 로그인 토큰 방식 구현 시)
+    implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5' // jackson serializer
+
+    // 🔹 개발용 도구
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
+    // 🔹 테스트 (기본 포함)
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <title>스터디 개설</title>
+  </head>
+  <body>
+    <h2>📝 스터디 개설</h2>
+    <form onsubmit="submitStudy(event)">
+      <input type="text" id="title" placeholder="제목" required /><br />
+      <textarea id="content" placeholder="설명" required></textarea><br />
+      <input
+        type="number"
+        id="maxMember"
+        placeholder="모집인원"
+        required /><br />
+      <input type="date" id="deadline" required /><br />
+      <button type="submit">등록</button>
+    </form>
+
+    <script>
+      const token = localStorage.getItem("token");
+      if (!token) location.href = "login.html";
+
+      async function submitStudy(e) {
+        e.preventDefault();
+        const data = {
+          title: document.getElementById("title").value,
+          content: document.getElementById("content").value,
+          maxMember: document.getElementById("maxMember").value,
+          deadline: document.getElementById("deadline").value,
+        };
+
+        const res = await fetch("http://localhost:8080/studies", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + token,
+          },
+          body: JSON.stringify(data),
+        });
+
+        if (res.ok) {
+          alert("등록 완료");
+          location.href = "studies.html";
+        } else {
+          alert("등록 실패");
+        }
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <title>로그인</title>
+  </head>
+  <body>
+    <h2>로그인</h2>
+    <form id="loginForm">
+      <input type="text" name="userid" placeholder="아이디" required /><br />
+      <input
+        type="password"
+        name="password"
+        placeholder="비밀번호"
+        required /><br />
+      <button type="submit">로그인</button>
+    </form>
+    <button onclick="location.href='signup.html'">회원가입</button>
+
+    <script>
+      localStorage.removeItem("token");
+      document
+        .getElementById("loginForm")
+        .addEventListener("submit", async function (e) {
+          e.preventDefault();
+          const form = e.target;
+          const data = {
+            userid: form.userid.value,
+            password: form.password.value,
+          };
+
+          const res = await fetch("http://localhost:8080/users/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data),
+          });
+
+          const result = await res.json();
+          if (res.ok && result.token) {
+            localStorage.setItem("token", result.token);
+            alert("로그인 성공");
+            location.href = "studies.html";
+          } else {
+            alert("로그인 실패: " + result.message || result);
+          }
+        });
+    </script>
+  </body>
+</html>

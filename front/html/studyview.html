@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <title>스터디 상세</title>
+  </head>
+  <body>
+    <h2>📄 스터디 상세</h2>
+    <div id="detail"></div>
+    <button onclick="applyStudy()">스터디 신청</button>
+    <button onclick="location.href='studies.html'">목록</button>
+
+    <div id="members">
+      <h4>참가자 목록</h4>
+      <ul id="memberList"></ul>
+    </div>
+
+    <script>
+      const token = localStorage.getItem("token");
+      if (!token) location.href = "login.html";
+
+      const params = new URLSearchParams(location.search);
+      const id = params.get("id");
+
+      async function loadDetail() {
+        const res = await fetch(`http://localhost:8080/studies/${id}`);
+        const study = await res.json();
+
+        const div = document.getElementById("detail");
+        div.innerHTML = `
+        <h3>${study.title}</h3>
+        <p>${study.content}</p>
+        <p>모집인원: ${study.maxMember}</p>
+        <p>마감일: ${study.deadline}</p>
+        <p>작성자: ${study.writerUserid}</p>
+      `;
+      }
+
+      async function applyStudy() {
+        const res = await fetch(`http://localhost:8080/applications/${id}`, {
+          method: "POST",
+          headers: { Authorization: "Bearer " + token },
+        });
+
+        const result = await res.text();
+        if (res.ok) {
+          alert(result);
+          location.reload();
+        } else {
+          alert("❌ " + result);
+        }
+      }
+
+      async function loadMembers() {
+        const res = await fetch(
+          `http://localhost:8080/applications/members/${id}`,
+          {
+            headers: { Authorization: "Bearer " + token },
+          }
+        );
+        const users = await res.json();
+        const ul = document.getElementById("memberList");
+        ul.innerHTML = "";
+        users.forEach((user) => {
+          const li = document.createElement("li");
+          li.innerText = user.userid; // 또는 user.name 등
+          ul.appendChild(li);
+        });
+      }
+
+      loadDetail();
+      loadMembers();
+    </script>
+  </body>
+</html>

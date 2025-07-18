@@ -1,0 +1,47 @@
+<!-- static/html/register.html -->
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <title>회원가입</title>
+  </head>
+  <body>
+    <h2>회원가입</h2>
+    <form id="registerForm">
+      <input type="text" name="userid" placeholder="아이디" required /><br />
+      <input
+        type="password"
+        name="password"
+        placeholder="비밀번호"
+        required /><br />
+      <input type="text" name="name" placeholder="이름" required /><br />
+      <input type="email" name="email" placeholder="이메일" required /><br />
+      <button type="submit">가입하기</button>
+    </form>
+
+    <script>
+      document
+        .getElementById("registerForm")
+        .addEventListener("submit", async function (e) {
+          e.preventDefault();
+          const form = e.target;
+          const data = {
+            userid: form.userid.value,
+            password: form.password.value,
+            name: form.name.value,
+            email: form.email.value,
+          };
+
+          const res = await fetch("http://localhost:8080/users/signup", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data),
+          });
+
+          const text = await res.text();
+          alert(text);
+          if (res.ok) location.href = "login.html";
+        });
+    </script>
+  </body>
+</html>

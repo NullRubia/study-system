@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.koreait.spring2.mapper.StudyApplicationMapper">
+
+    <insert id="insert"
+            parameterType="com.koreait.spring2.entity.StudyApplication"
+            useGeneratedKeys="true"
+            keyProperty="id">
+        INSERT INTO study_applications (study_id, user_id)
+        VALUES (#{studyId}, #{userId});
+    </insert>
+
+    <select id="findByUserAndStudy" resultType="StudyApplication">
+        SELECT * FROM study_applications
+        WHERE user_id = #{userId} AND study_id = #{studyId}
+    </select>
+
+    <select id="countByStudy" resultType="int">
+        SELECT COUNT(*) FROM study_applications WHERE study_id = #{studyId}
+    </select>
+
+    <select id="findByUser" resultType="com.koreait.spring2.dto.ApplicationDTO">
+        SELECT
+            s.id AS studyId,
+            s.title AS studyTitle,
+            a.applied_at AS appliedAt
+        FROM study_applications a
+                 JOIN studies s ON a.study_id = s.id
+        WHERE a.user_id = #{userId}
+    </select>
+
+    <select id="getApplicantsByStudy" resultType="com.koreait.spring2.entity.User">
+        SELECT u.*
+        FROM study_applications sa
+                 JOIN users u ON sa.user_id = u.id
+        WHERE sa.study_id = #{studyId}
+    </select>
+
+</mapper>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <title>스터디 목록</title>
+  </head>
+  <body>
+    <h2>📋 스터디 목록</h2>
+    <button onclick="location.href='studycreate.html'">스터디 개설</button>
+    <button onclick="location.href='mypage.html'">마이페이지로</button>
+    <button onclick="location.href='login.html'">로그아웃</button>
+    <ul id="studyList"></ul>
+
+    <script>
+      const token = localStorage.getItem("token");
+      if (!token) location.href = "login.html";
+
+      async function loadStudies() {
+        const res = await fetch("http://localhost:8080/studies");
+        const studies = await res.json();
+
+        const list = document.getElementById("studyList");
+        list.innerHTML = "";
+
+        studies.forEach((s) => {
+          const li = document.createElement("li");
+          li.innerHTML = `
+          <a href="studyview.html?id=${s.id}">${s.title}</a> 
+          (작성자: ${s.writerUserid}, 마감일: ${s.deadline})
+        `;
+          list.appendChild(li);
+        });
+      }
+
+      loadStudies();
+    </script>
+  </body>
+</html>
